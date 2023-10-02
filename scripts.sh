@@ -4,4 +4,4 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Run main.py using the absolute path
-python "$SCRIPT_DIR/main.py" "$@"
+python "$SCRIPT_DIR/deeptitle-packages/main.py" "$@"
