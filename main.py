@@ -1,8 +1,18 @@
+#!/usr/bin/env python
 from models import Line
 from translate import Translator
 import argparse 
 
 def get_argument():
+    encoding_choices = {
+        'utf-8': 'UTF-8 (Unicode Transformation Format 8-bit)',
+        'utf-16': 'UTF-16 (Unicode Transformation Format 16-bit)',
+        'utf-16le': 'UTF-16 Little-Endian',
+        'utf-16be': 'UTF-16 Big-Endian',
+        'iso-8859-1': 'ISO 8859-1 (Latin-1)',
+        'iso-8859-2': 'ISO 8859-2 (Latin-2)',
+        'windows-1252': 'Windows-1252 (Windows Western European)',
+    }    
     parser = argparse.ArgumentParser(description='DeepTitle - An automatic subtitle translator')
     
     # Positional argument(s)
@@ -12,7 +22,7 @@ def get_argument():
     parser.add_argument('-e', '--email', type=str, help='Translated.com valid user email for more chars/day', metavar="", default="")
     parser.add_argument('-s', '--source', type=str, help="The original language", default="en", metavar="")
     parser.add_argument('-d', '--dist', type=str, help="The desired language", default="vi", metavar="")
-
+    parser.add_argument('--encode', type=str, help='The Character Encoding technique that matches your file. Allowed values are: ' +', '.join(encoding_choices.keys()), default="utf-16", metavar="", choices=encoding_choices.keys())
     
     args = parser.parse_args()
     
@@ -20,15 +30,16 @@ def get_argument():
         'originalFileName': args.originalFileName,
         'email': args.email,
         'source': args.source,
-        'dist': args.dist
+        'dist': args.dist,
+        'encode': args.encode
     }
 
     return arguments
 
 
-def read_srt_file(filename):
+def read_srt_file(filename, encode="utf-8-sig"):
     lines = []
-    with open(filename, 'r', encoding='utf-8-sig') as file:  # Specify the encoding
+    with open(filename, 'r', encoding=encode) as file:  # Specify the encoding
         srt_data = file.read().strip().split('\n\n')
         for block in srt_data:
             parts = block.split('\n')
@@ -82,6 +93,6 @@ if __name__ == "__main__":
     system_arguments = get_argument()
     srt_original_filename = system_arguments['originalFileName']
     translator= Translator(from_lang=system_arguments['source'], to_lang=system_arguments['dist'], email=system_arguments['email'])
-    lines_original = read_srt_file(srt_original_filename)
+    lines_original = read_srt_file(srt_original_filename, encode=system_arguments['encode'])
     lines_dist = translate_lines(lines_original)
     write_srt_file("result.srt", lines_dist)
