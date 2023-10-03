@@ -76,12 +76,20 @@ def translate_lines(lines: list[Line], chunk_size = 500):
                     # print(index, lines[prev_line_index].scripts, "|", translated_scripts[index])
                     lines[prev_line_index].scripts = translated_scripts[index]
                     index += 1
-                except:
+                except Exception as e:
                     # print(index, lines[prev_line_index].scripts, translated_scripts[index-1])
-                    print(dialog)
-                    print(translated_dialog_raw)
-                    print(len(translated_scripts))
-                    print(line_index - startChunk)
+                    # print(dialog)
+                    # print(translated_dialog_raw)
+                    # print(len(translated_scripts))
+                    # print(line_index - startChunk)
+                    """
+                      Check if the error occurs because of my memory api limit usage
+                     """
+                    if ("MYMEMORY WARNING" in translated_scripts[0]):
+                        print("YOU'VE USED ALL YOUR FREE TRANSLATIONS FOR TODAY. CONSIDER PROVIDE A TRANSLATED.COM EMAIL TO CONTINUE USING OR COMEBACK LATER")
+                        exit(0)
+                    else:
+                        print("WARNING !! AN ERROR OCCURS")
             startChunk = line_index
             print(startChunk)
             dialog = lines[line_index].scripts + "[*]"
